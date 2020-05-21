@@ -13,7 +13,7 @@ import alert from '../../assets/alert.svg';
 import api from '../../services/api';
 
 interface FileProps {
-  file: File;
+  dataToUpload: File;
   name: string;
   readableSize: string;
 }
@@ -23,19 +23,30 @@ const Import: React.FC = () => {
   const history = useHistory();
 
   async function handleUpload(): Promise<void> {
-    // const data = new FormData();
+    const formData = new FormData();
 
-    // TODO
+    if (!uploadedFiles.length) return console.log('sem arquivo');
+
+    const fileToUpload = uploadedFiles[0];
+
+    formData.append('file', fileToUpload.dataToUpload, fileToUpload.name);
 
     try {
-      // await api.post('/transactions/import', data);
+      await api.post('/transactions/import', formData);
+      history.push('/');
     } catch (err) {
-      // console.log(err.response.error);
+      console.log(err.response.error);
     }
   }
 
   function submitFile(files: File[]): void {
-    // TODO
+    const uploadFiles = files.map(file => ({
+      dataToUpload: file,
+      name: file.name,
+      readableSize: filesize(file.size),
+    }));
+
+    setUploadedFiles(uploadFiles);
   }
 
   return (
